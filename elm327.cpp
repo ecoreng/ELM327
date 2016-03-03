@@ -73,7 +73,6 @@ String ELM327::query(String command){
 String ELM327::process(String command, String result){
 
   long DisplayValue;
-  String command="";
   int ByteCount=0;
   long A;
   int B;
