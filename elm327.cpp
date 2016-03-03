@@ -66,7 +66,7 @@ String ELM327::query(String command){
   inString.replace("?","");
   inString.replace(",","");
 
-  return BuildINString;
+  return inString;
 }
 
 // TODO move this into it's own class, PID's arent inherently ELM327 related.
