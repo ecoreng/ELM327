@@ -21,15 +21,13 @@ _HardSerial(serial)
 
   // Should abstract this.
   if (result.substring(1,7)=="ELM327"){
-    delay(DELAYLENGTH);
+    // Great. We're connected.
   }
   else{
-    delay(DELAYLENGTH);
+    delay(DELAYLENGTH)
     // This really ought to return on failure.
     goto Retry;
   }
-
-  delay(DELAYLENGTH);
 }
 
 // This is a wrapper around querying the device and
@@ -42,11 +40,22 @@ String ELM327::query(String command){
   String inString="";
   byte inData=0;
   char inChar=0;
-
+  bool spinlock = true;
+  unsigned long time;
   _HardSerial.println(command);
 
-  delay(DELAYLENGTH);
-
+  time = millis();
+  
+  // Spinlock's are perfectly valid :D
+  while(spinlock){
+    if(millis() > (time + 4000)){
+      // TODO: Handle this condition in process();
+      return "Timeout";
+    }
+    else if(_HardSerial.available()){
+      spinlock = false;
+    }
+  }
   while(_HardSerial.available() > 0){
     inData = 0;
     inChar = 0;
