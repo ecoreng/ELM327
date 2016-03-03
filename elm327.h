@@ -8,11 +8,16 @@
   TODO: Debug / test with a real car.
   TODO: handle max/min and throw out bad reads.
   TODO: throttle DELAYLENGTH until consistently getting good reads.
-  TODO: Don't use delay for processing incoming data..
+  TODO: Don't use delay for processing incoming data.. Wait for > character.
   TODO: Handle PID's supported - 00, 20, 30, 40, 50, 60, A0, C0
   TODO: Mode 09 02 (Read VIN)
   TODO: Bitmap / text string of manufacturer based on VIN 09 02 (bitmaps optional by define.)
   TODO: Mode 09 0A (Get ECU name)
+  TODO: Handle Trouble Codes.
+  TODO: Turn headers off  (AT H0)
+  TODO: Turn Echo off (perhaps add a debug mode with optional serial parameter?) (AT E0)
+  TODO: investigate AT CS (detects hardware errors)
+  TODO: A nicer hex to dec wrapper
 */
 #ifndef ELM327_h
 #define ELM327_h
