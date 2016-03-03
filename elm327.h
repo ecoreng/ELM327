@@ -18,6 +18,7 @@
   TODO: Turn Echo off (perhaps add a debug mode with optional serial parameter?) (AT E0)
   TODO: investigate AT CS (detects hardware errors)
   TODO: A nicer hex to dec wrapper
+  TODO: make the responses numeric, with a second call for units. Units are only necessary for text output and hinder use on gauges.
 */
 #ifndef ELM327_h
 #define ELM327_h
