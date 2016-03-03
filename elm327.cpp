@@ -70,6 +70,8 @@ String ELM327::query(String command){
 }
 
 // TODO move this into it's own class, PID's arent inherently ELM327 related.
+// Should be removing spaces and removing the first 4 characters first. 
+// the 41 0C for example.. is the CAN bus ID
 String ELM327::process(String command, String result){
 
   long DisplayValue;
