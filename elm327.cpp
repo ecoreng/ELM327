@@ -76,7 +76,6 @@ String ELM327::process(String command, String result){
   int ByteCount=0;
   long A;
   int B;
-  int WorkingVal;
   String WorkingString="";
 
   //Check which OBD Command was sent and calculate VALUE
