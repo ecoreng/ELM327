@@ -4,28 +4,19 @@
 */
 
 #include "Arduino.h"
-#include "PID.h"
 #include "elm327.h"
 #include "HardwareSerial.h"
 #include "SoftwareSerial.h"
+#include "PID.h"
 
-
-ELM327::ELM327(HardwareSerial &serial) {
+template <class T>
+ELM327<T>::ELM327(T *serial) {
   this->serial = serial;
   this->init();
 }
 
-ELM327::ELM327(SoftwareSerial &serial) {
-  this->serial = serial;
-  this->init();
-}
-
-ELM327::ELM327(MockSerial &serial) {
-  this->serial = serial;
-  this->init();
-}
-
-void ELM327::init() {
+template <class T>
+void ELM327<T>::init() {
   String result;
 
   delay(DELAYLENGTH);
@@ -41,12 +32,14 @@ void ELM327::init() {
 }
 
 // Query and process
-String ELM327::get(String command) {
+template <class T>
+String ELM327<T>::get(String command) {
   return process(command, query(command));
 }
 
 // Query and return
-String ELM327::query(String command) {
+template <class T>
+String ELM327<T>::query(String command) {
   String inString = "";
   byte inData = 0;
   char inChar = 0;
@@ -86,7 +79,8 @@ String ELM327::query(String command) {
 }
 
 // Process the response based on the queried command
-String ELM327::process(String command, String result) {
+template <class T>
+String ELM327<T>::process(String command, String result) {
   long DisplayValue;
   int ByteCount = 0;
   long A;
@@ -115,7 +109,7 @@ String ELM327::process(String command, String result) {
   }
 
   //Coolant Temp
-  else if (command == PID_COOLANT) {
+  else if (command == PID_COOLANT_TEMP) {
     WorkingString = result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;

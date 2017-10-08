@@ -18,33 +18,47 @@ obd.get(PID_RPM);
 Mock Serial to test without a car
 
 ```
-#include "SoftwareSerial.h"
+#include "elm327.h"
+#include "elm327.cpp"
 #include "PID.h"
 
-// this might not work, just an example of how to mock
-//  the required serial connection interface
-class ArrayMockSerial extends MockSerial {
-  int data[6] = {1, 2, 3, 4, 5, 6};
-  int total = 6;
+class ArrayMockSerial : public MockSerial {
+  char data[20];
+  int total = 20;
+  int i = 0;
 
-  void println(String payload) {
-    // nothing
-  }
+  public:
+    void println(String payload) {
+      i = 0;
+      if (payload == "ATI") {
+        strcpy(data, "ELM3271            ");
+      }
+      else if (payload == PID_RPM) {
+        strcpy(data, "?? ?? 1B E0        ");
+      }
+    }
+    
+    int available() {
+      return total - i;
+    }
+    
+    int read() {
+      return data[i++];
+    }
+};
+
+ArrayMockSerial serialMock;
+ELM327<ArrayMockSerial> obd(&serialMock);
+
+void setup() {
   
-  int available() {
-    return total;
-  }
-  
-  int read() {
-    total--;
-    return data[total];
-  }
 }
 
-ArrayMockSerial serial;
+void loop() {
+  String result = obd.get(PID_RPM);
+}
 
-ELM327 obd(serial);
-obd.get(PID_RPM);
+
 ```
 
 

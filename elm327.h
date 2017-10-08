@@ -26,7 +26,7 @@
 #include "Arduino.h"
 #include "HardwareSerial.h"
 #include "SoftwareSerial.h"
-#include "PID.h"
+
 
 #ifndef DELAYLENGTH
   #define DELAYLENGTH 500
@@ -39,21 +39,20 @@
 class MockSerial
 {
   public:
-     virtual void println(String payload);
-     virtual int available();
-     virtual byte read();
-}
+    virtual void println(String payload);
+    virtual int available();
+    virtual int read();
+};
 
+template <class T>
 class ELM327
 {
   public:
-    ELM327(HardwareSerial *serial);
-    ELM327(SoftwareSerial *serial);
-    ELM327(MockSerial *serial);
+    ELM327(T *serial);
     void init();
     String get(String command);
   private:
-    auto &serial;
+    T *serial;
     String query(String command);
     String process(String command, String result);
 };
