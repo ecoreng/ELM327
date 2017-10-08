@@ -1,6 +1,8 @@
 # ELM327
 A library to communicate with an ELM327 device via an arduino's serial connection
 
+Software Serial (Cable, Bluetooth SPP, etc)
+
 ```
 #include "SoftwareSerial.h"
 #include "PID.h"
@@ -11,6 +13,9 @@ serial.begin(9600);
 ELM327 obd(serial);
 obd.get(PID_RPM);
 ```
+
+
+Mock Serial to test without a car
 
 ```
 #include "SoftwareSerial.h"
