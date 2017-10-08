@@ -12,7 +12,6 @@
 template <class T>
 ELM327<T>::ELM327(T *serial) {
   this->serial = serial;
-  this->init();
 }
 
 template <class T>
@@ -22,7 +21,6 @@ void ELM327<T>::init() {
   delay(DELAYLENGTH);
   Retry:
     result = query("ATI");
-
     // Should abstract this.
     if (result.substring(1, 7) != "ELM327"){
       delay(DELAYLENGTH);
@@ -76,6 +74,7 @@ String ELM327<T>::query(String command) {
   inString.replace(",", "");
 
   return inString;
+  return String("");
 }
 
 // Process the response based on the queried command

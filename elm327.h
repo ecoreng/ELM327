@@ -51,9 +51,9 @@ class ELM327
     ELM327(T *serial);
     void init();
     String get(String command);
+    String query(String command);    
   private:
     T *serial;
-    String query(String command);
     String process(String command, String result);
 };
 
