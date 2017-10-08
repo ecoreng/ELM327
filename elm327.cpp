@@ -89,19 +89,18 @@ String ELM327<T>::process(String command, String result) {
   //Check which OBD Command was sent and calculate VALUE
   //Calculate RPM I.E Returned bytes wil be 41 0C 1B E0
   if (command == PID_RPM) {
-    WorkingString = result.substring(7, 9);
+    WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
-    WorkingString = result.substring(11, 13);
+    WorkingString = "0x" + result.substring(11, 13);
     B = strtol(WorkingString.c_str(), NULL, 0);
-
-   DisplayValue = ((A * 256) + B) / 4;
-   return String(DisplayValue) + " rpm";
+    DisplayValue = ((A * 256) + B) / 4;
+    return String(DisplayValue) + " rpm";
   }
 
   //Calculate Vehicle speed
   // I.E Returned bytes wil be 41 0C 1B E0
   else if (command == PID_SPEED) {
-    WorkingString = result.substring(7, 9);
+    WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
     return String(DisplayValue) + " km/h";
@@ -109,7 +108,7 @@ String ELM327<T>::process(String command, String result) {
 
   //Coolant Temp
   else if (command == PID_COOLANT_TEMP) {
-    WorkingString = result.substring(7, 9);
+    WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
     return String(DisplayValue) + " C";
@@ -117,7 +116,7 @@ String ELM327<T>::process(String command, String result) {
 
   //IAT Temp
   else if (command == PID_IAT_TEMP) {
-    WorkingString = result.substring(7, 9);
+    WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
     return String(DisplayValue) + " C";
@@ -125,9 +124,9 @@ String ELM327<T>::process(String command, String result) {
 
   //Air flow Rate
   else if (command == PID_AIR_FLOW_RATE) {
-    WorkingString = result.substring(7, 9);
+    WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
-    WorkingString = result.substring(11, 13);
+    WorkingString = "0x" + result.substring(11, 13);
     B = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = ((A * 256) + B) / 100;
     return String(DisplayValue) + " g/s";
@@ -135,7 +134,7 @@ String ELM327<T>::process(String command, String result) {
 
   //Ambient Temp
   else if (command == PID_AMBIENT_TEMP) {
-    WorkingString = result.substring(7, 9);
+    WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
     return String(DisplayValue) + " C";
@@ -143,7 +142,7 @@ String ELM327<T>::process(String command, String result) {
 
   //Throttle position
   else if (command == PID_THROTTLE) {
-    WorkingString = result.substring(7, 9);
+    WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
     return String(DisplayValue) + " %";
@@ -151,7 +150,7 @@ String ELM327<T>::process(String command, String result) {
 
   //Barometric pressure
   else if (command == PID_BAROMETRIC_PRESSURE) {
-    WorkingString = result.substring(7, 9);
+    WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
     return String(DisplayValue) + " kpa";

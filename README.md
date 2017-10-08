@@ -31,10 +31,10 @@ class ArrayMockSerial : public MockSerial {
     void println(String payload) {
       i = 0;
       if (payload == "ATI") {
-        strcpy(data, "ELM3271            ");
+        strcpy(data, " ELM327            ");
       }
       else if (payload == PID_RPM) {
-        strcpy(data, "?? ?? 1B E0        ");
+        strcpy(data, " ZZ ZZ 1F  FF      ");
       }
     }
     
@@ -50,15 +50,15 @@ class ArrayMockSerial : public MockSerial {
 ArrayMockSerial serialMock;
 ELM327<ArrayMockSerial> obd(&serialMock);
 
+
 void setup() {
-  
+  delay(500);
+  obd.init();
 }
 
 void loop() {
-  String result = obd.get(PID_RPM);
+  String rpm = obd.get(PID_RPM);
+  delay(1500);
 }
 
-
 ```
-
-
