@@ -9,6 +9,7 @@
 #include "SoftwareSerial.h"
 #include "PID.h"
 
+
 template <class T>
 ELM327<T>::ELM327(T *serial) {
   this->serial = serial;
@@ -18,11 +19,10 @@ template <class T>
 void ELM327<T>::init() {
   String result;
 
-  delay(DELAYLENGTH);
   Retry:
     result = query("ATI");
     // Should abstract this.
-    if (result.substring(1, 7) != "ELM327"){
+    if (result.substring(1, 7) != "ELM327") {
       delay(DELAYLENGTH);
       // This really ought to return on failure.
       goto Retry;
@@ -31,7 +31,7 @@ void ELM327<T>::init() {
 
 // Query and process
 template <class T>
-String ELM327<T>::get(String command) {
+Measurement ELM327<T>::get(String command) {
   return process(command, query(command));
 }
 
@@ -45,21 +45,30 @@ String ELM327<T>::query(String command) {
 
   // send the query
   this->serial->println(command);
+
+  if (DEBUG_ELM == 1) {
+    Serial.println("sending: " + command);
+  }
+
   time = millis();
   
   // waiting here until we get a response
   while(this->serial->available() < 1) {
-    if(millis() > (time + SERIALTIMEOUT)){
+    if(millis() > (time + SERIALTIMEOUT)) {
       return "";
     }
   }
   // read the whole response
-  while(this->serial->available() > 0){
+  while(this->serial->available() > 0) {
     inData = 0;
     inChar = 0;
     byte inData = this->serial->read();
     char inChar = char(inData);
     inString = inString + inChar;
+  }
+
+  if (DEBUG_ELM == 1) {
+    Serial.println("received: " + inString);
   }
 
   inString.replace(command, "");
@@ -74,16 +83,16 @@ String ELM327<T>::query(String command) {
   inString.replace(",", "");
 
   return inString;
-  return String("");
 }
 
 // Process the response based on the queried command
 template <class T>
-String ELM327<T>::process(String command, String result) {
+Measurement ELM327<T>::process(String command, String result) {
   long DisplayValue;
   int ByteCount = 0;
   long A;
   int B;
+  Measurement measurement;
   String WorkingString = "";
 
   //Check which OBD Command was sent and calculate VALUE
@@ -94,7 +103,10 @@ String ELM327<T>::process(String command, String result) {
     WorkingString = "0x" + result.substring(11, 13);
     B = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = ((A * 256) + B) / 4;
-    return String(DisplayValue) + " rpm";
+
+    measurement.value = String(DisplayValue);
+    measurement.unit = "rpm";
+    measurement.raw = DisplayValue / 16383.75 * 1023;
   }
 
   //Calculate Vehicle speed
@@ -103,7 +115,10 @@ String ELM327<T>::process(String command, String result) {
     WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
-    return String(DisplayValue) + " km/h";
+
+    measurement.value = String(DisplayValue);
+    measurement.unit = "km/h";
+    measurement.raw = DisplayValue / 255 * 1023;
   }
 
   //Coolant Temp
@@ -111,7 +126,10 @@ String ELM327<T>::process(String command, String result) {
     WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
-    return String(DisplayValue) + " C";
+
+    measurement.value = String(DisplayValue);
+    measurement.unit = "C";
+    measurement.raw = DisplayValue / 255 * 1023;
   }
 
   //IAT Temp
@@ -119,7 +137,10 @@ String ELM327<T>::process(String command, String result) {
     WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
-    return String(DisplayValue) + " C";
+
+    measurement.value = String(DisplayValue);
+    measurement.unit = "C";
+    measurement.raw = DisplayValue / 255 * 1023;
   }
 
   //Air flow Rate
@@ -129,7 +150,10 @@ String ELM327<T>::process(String command, String result) {
     WorkingString = "0x" + result.substring(11, 13);
     B = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = ((A * 256) + B) / 100;
-    return String(DisplayValue) + " g/s";
+
+    measurement.value = String(DisplayValue);
+    measurement.unit = "g/s";
+    measurement.raw = DisplayValue / 655.35 * 1023;
   }
 
   //Ambient Temp
@@ -137,7 +161,10 @@ String ELM327<T>::process(String command, String result) {
     WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
-    return String(DisplayValue) + " C";
+
+    measurement.value = String(DisplayValue);
+    measurement.unit = "C";
+    measurement.raw = DisplayValue / 255 * 1023;
   }
 
   //Throttle position
@@ -145,7 +172,10 @@ String ELM327<T>::process(String command, String result) {
     WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
-    return String(DisplayValue) + " %";
+
+    measurement.value = String(DisplayValue);
+    measurement.unit = "%";
+    measurement.raw = DisplayValue / 100 * 1023;
   }
 
   //Barometric pressure
@@ -153,10 +183,22 @@ String ELM327<T>::process(String command, String result) {
     WorkingString = "0x" + result.substring(7, 9);
     A = strtol(WorkingString.c_str(), NULL, 0);
     DisplayValue = A;
-    return String(DisplayValue) + " kpa";
+
+    measurement.value = String(DisplayValue);
+    measurement.unit = "kpa";
+    measurement.raw = DisplayValue / 255 * 1023;
   }
 
   else {
-    return String(DisplayValue);
+    measurement.value = String(DisplayValue);
+    measurement.unit = "";
+    measurement.raw = DisplayValue;
   }
+
+  if (DEBUG_ELM == 1) {
+    Serial.println(measurement.value + " " + measurement.unit);
+    Serial.println("raw: " + String(measurement.raw));
+  }
+
+  return measurement;
 }

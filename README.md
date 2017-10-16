@@ -57,8 +57,20 @@ void setup() {
 }
 
 void loop() {
-  String rpm = obd.get(PID_RPM);
-  delay(1500);
+  Measurement measurement = obd.get(PID_RPM);
+  delay(150);
+
+  // returned value converted to the measured units (not literal value cominig in)
+  // ex: 1340
+  // measurement.value
+
+  // unit for 'value'
+  // ex: rpm
+  // measurement.unit
+
+  // conversion of value to 10 bits
+  // value range: 0-1023
+  // measurement.raw
 }
 
 ```
